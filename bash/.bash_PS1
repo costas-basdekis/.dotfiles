@@ -1,0 +1,211 @@
+#  Customize BASH PS1 prompt to show current GIT repository and branch.
+#  by Mike Stewart - http://MediaDoneRight.com
+
+#  SETUP CONSTANTS
+#  Bunch-o-predefined colors.  Makes reading code easier than escape sequences.
+#  I don't remember where I found this.  o_O
+
+CS="\[\033[0" #Color start
+CE="m\]" #Color end
+
+# Reset
+Color_Off="${CS}0${CE}"       # Text Reset
+
+# Regular Colors
+ Black="${CS}0;30${CE}"
+   Red="${CS}0;31${CE}"
+ Green="${CS}0;32${CE}"
+Yellow="${CS}0;33${CE}"
+  Blue="${CS}0;34${CE}"
+Purple="${CS}0;35${CE}"
+  Cyan="${CS}0;36${CE}"
+ White="${CS}0;37${CE}"
+
+# Bold
+ BBlack="${CS}1;30${CE}"
+   BRed="${CS}1;31${CE}"
+ BGreen="${CS}1;32${CE}"
+BYellow="${CS}1;33${CE}"
+  BBlue="${CS}1;34${CE}"
+BPurple="${CS}1;35${CE}"
+  BCyan="${CS}1;36${CE}"
+ BWhite="${CS}1;37${CE}"
+
+# Underline
+ UBlack="${CS}4;30${CE}"
+   URed="${CS}4;31${CE}"
+ UGreen="${CS}4;32${CE}"
+UYellow="${CS}4;33${CE}"
+  UBlue="${CS}4;34${CE}"
+UPurple="${CS}4;35${CE}"
+  UCyan="${CS}4;36${CE}"
+ UWhite="${CS}4;37${CE}"
+
+# Background
+ On_Black="${CS}40${CE}"
+   On_Red="${CS}41${CE}"
+ On_Green="${CS}42${CE}"
+On_Yellow="${CS}43${CE}"
+  On_Blue="${CS}44${CE}"
+On_Purple="${CS}45${CE}"
+  On_Cyan="${CS}46${CE}"
+ On_White="${CS}47${CE}"
+
+# High Intensty
+ IBlack="${CS}0;90${CE}"
+   IRed="${CS}0;91${CE}"
+ IGreen="${CS}0;92${CE}"
+IYellow="${CS}0;93${CE}"
+  IBlue="${CS}0;94${CE}"
+IPurple="${CS}0;95${CE}"
+  ICyan="${CS}0;96${CE}"
+ IWhite="${CS}0;97${CE}"
+
+# Bold High Intensty
+ BIBlack="${CS}1;90${CE}"
+   BIRed="${CS}1;91${CE}"
+ BIGreen="${CS}1;92${CE}"
+BIYellow="${CS}1;93${CE}"
+  BIBlue="${CS}1;94${CE}"
+BIPurple="${CS}1;95${CE}"
+  BICyan="${CS}1;96${CE}"
+ BIWhite="${CS}1;97${CE}"
+
+# High Intensty backgrounds
+ On_IBlack="${CS}0;100${CE}"
+   On_IRed="${CS}0;101${CE}"
+ On_IGreen="${CS}0;102${CE}"
+On_IYellow="${CS}0;103${CE}"
+  On_IBlue="${CS}0;104${CE}"
+On_IPurple="${CS}0;95${CE}"
+  On_ICyan="${CS}0;106${CE}"
+ On_IWhite="${CS}0;107${CE}"
+
+# Various variables you might want for your PS1 prompt instead
+DateAbbr="\a" #Tue May 26
+Time24s="\t" #23:45:12
+Time12s="\T" #11:45:12 pm
+Time12m="\@" #12:14 pm
+Time24m="\A" #23:45
+
+PathFull="\w" #~/git
+PathShort="\W" #git
+NewLine="\n"
+Jobs="\j"
+
+Username="\u"
+HostnameSmall="\h" #Up to the first part
+HostnameFull="\H"
+
+HistoryNumber="\!"
+CommandNumber="\#"
+PromptSymbol="\$" #if the effective UID is 0, a #, otherwise a $
+
+#Default PS1
+ps_user="$( \
+	if [[ "$USER" == root ]]; then \
+		echo "$USER"; \
+	else \
+		echo ${USER:0:2}; \
+	fi;)"
+if [ "$color_prompt" = yes ]; then
+    ps_main="${BGreen}${ps_user}:${BBlue}${PathFull}${Color_Off}"
+else
+    ps_main="${ps_user}:${PathFull}"
+fi
+
+# If this is an xterm set the tab title
+case "$TERM" in
+xterm*|rxvt*)
+	#Change tab title to git repo
+	ps_title_repo="\[\e]0;"'$(
+		if [ -n "$(gitfoldername)" ]; \
+		then \
+			echo [`gitfoldername`]; \
+		else \
+			echo "'${PathFull}'"; \
+		fi \
+	)'"\a\]";;
+*)
+	ps_title_repo="";;
+esac
+
+#Add git repository information - taken from http://mediadoneright.com/content/ultimate-git-ps1-bash-prompt
+ps_status='$(
+	git branch &>/dev/null; \
+	if [ $? -eq 0 ]; \
+	then \
+		git_status=`git status`; \
+		echo "$git_status" | \
+		grep "nothing to commit" > /dev/null 2>&1; \
+		if [ $? -eq 0 ]; \
+		then \
+			# @4 - Clean repository - nothing to commit
+			repo_status="'${Green}'"; \
+		else \
+			echo "$git_status" | \
+			grep "Changes not staged for commit\|Untracked files" > /dev/null 2>&1; \
+			if [ $? -eq 0 ]; \
+			then \
+				# @5 - Unstaged changes to working tree
+				repo_status="'${IRed}'"; \
+			else \
+				# @6 - Staged changes to working tree
+				repo_status="'${IYellow}'"; \
+			fi \
+		fi; \
+		
+		branch_name="$(__git_ps1 "{%s}")"; \
+		
+		commits_behind=` \
+			echo "$git_status" | \
+			grep "Your branch is behind" | \
+			sed -r "s/.*Your branch is behind .* by (.+) commit.*/\1/" \
+		`; \
+		
+		commits_ahead=` \
+			echo "$git_status" | \
+			grep "Your branch is ahead of" | \
+			sed -r "s/.*Your branch is ahead of .* by (.+) commit.*/\1/" \
+		`; \
+
+		if [ -z "$commits_behind" ] && [ -z "$commits_ahead" ]; \
+		then \
+			commits_behind=` \
+				echo "$git_status" | \
+				grep -e "and have .* and .* different commit" | \
+				sed -r "s/.*and have [^ ]* and (.*) different.*/\1/" \
+			`; \
+			commits_ahead=` \
+				echo "$git_status" | \
+				grep -e "and have .* and .* different commit" | \
+				sed -r "s/.*and have (.*) and (.*) different.*/\1/" \
+			`; \
+		fi \
+		
+		echo -n "${repo_status}${branch_name}'${Yellow}'$commits_ahead'${Color_Off}${Blue}'$commits_behind'${Color_Off}'"; \
+	else \
+		# @2 - Prompt when not in GIT repo
+		echo ""; \
+	fi \
+)'
+
+#Add virtual environment information
+ps_venv='$(
+	if [ -n "$VIRTUAL_ENV" ]; \
+	then \
+		echo "(`basename \"$VIRTUAL_ENV\"`)"; \
+	else \
+		echo ""; \
+	fi \
+)'
+
+PS1="${ps_venv}${ps_main}${ps_title_repo}${ps_status}${PromptSymbol} "
+
+if [ "$color_prompt" = yes ]; then
+	PS1="${On_IBlack}${PS1}"
+fi
+unset color_prompt force_color_prompt
+
+COSTAS_PS1=$PS1
+
