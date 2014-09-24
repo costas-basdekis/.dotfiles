@@ -19,6 +19,8 @@ fnd() {
 	grep -Ev "^find: ‘.*’: Permission denied$"
 }
 
+alias cleanpyc='find . -iname "*.pyc" -exec rm {} \;'
+
 alias gbr='git branch'
 alias gst='git status'
 alias gsl='git stash list'
