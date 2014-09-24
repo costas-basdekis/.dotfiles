@@ -676,7 +676,7 @@ function run_django_server() {
 		port="8000"
 	fi
 	
-	`manage_py` runserver "$host:$port" --traceback
+	`manage_py` runserver_plus "$host:$port" --traceback
 }
 alias server='run_django_server'
 
