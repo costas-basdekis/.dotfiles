@@ -1,0 +1,14 @@
+{
+	"installed_packages":
+	[
+		"BracketHighlighter",
+		"Djaneiro",
+		"File History",
+		"Git",
+		"GitGutter",
+		"Python Flake8 Lint",
+		"Sublime Files",
+		"SublimeCodeIntel",
+		"SublimePythonIDE"
+	]
+}

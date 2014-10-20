@@ -1,0 +1,10 @@
+{
+	// run flake8 lint on file loading
+	"lint_on_load": true,
+	// popup a dialog of detected conditions?
+	"popup": false,
+	// set desired max line length
+	"pep8_max_line_length": 83,
+	// files to ignore, for example: ["*.mako", "test*.py"]
+	"ignore_files": []
+}
