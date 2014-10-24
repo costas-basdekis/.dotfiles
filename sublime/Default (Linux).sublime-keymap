@@ -1,0 +1,3 @@
+[
+	{ "keys": ["ctrl+shift+o"], "command": "open_recently_closed_file", "args": {"current_project_only": false, "show_quick_panel": true}}
+]
