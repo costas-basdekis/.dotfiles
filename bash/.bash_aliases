@@ -480,7 +480,7 @@ function nicegrep()
 					
 					echo "$tpbfile $tpi$tpf$pfile$tpi"
 				fi
-				outp="$tpbfile #${args[1]}	$tpi${args[2]}"
+				outp="$tpbfile :${args[1]}	$tpi${args[2]}"
 				if [ ${#outp} -gt $maxcols ] #Truncate to screen
 				then
 					outp=${outp:0:$maxcols}
@@ -502,7 +502,7 @@ alias ng='nicegrep'
 
 #Gather files from nicegrep
 nicegrepfiles() {
-	egrep "^[^#]+[\\w\\.]+[^#]+$"
+	egrep "^[^:]+[\\w\\.]+[^:]+$"
 }
 alias ngfiles='nicegrepfiles'
 
