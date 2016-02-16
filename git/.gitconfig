@@ -1,0 +1,15 @@
+[color]
+	ui = auto
+[user]
+	email = costas.basdekis@gmail.com
+	name = Costas Basdekis
+[push]
+	default = simple
+[credential]
+	helper = /usr/share/doc/git/contrib/credential/gnome-keyring/git-credential-gnome-keyring
+[alias]
+	eat = stash save
+	poop = stash pop
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = vim
