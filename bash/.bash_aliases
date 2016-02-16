@@ -178,6 +178,7 @@ function gitnewbranch {
 alias gnb='gitnewbranch'
 
 alias gsno='git show --name-only'
+alias gdno='git diff --name-only'
 alias grh='git reset HEAD'
 
 #Git log of a specific author (or everybody if none specified)
