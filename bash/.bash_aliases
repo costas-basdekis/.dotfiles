@@ -291,6 +291,29 @@ function gitsubmodulecheckout()
 }
 alias gsmco='gitsubmodulecheckout'
 
+unmin_css() {
+	sed -re 's/([{};,])/\1\n/g' "$@"
+}
+
+git_min_css_diff() {
+	local git_file="$1"
+	local difftool="$2"
+	if [ -z "$difftool" ]
+	then
+		difftool="meld"
+	fi
+	
+	local temp_original=`mktemp`
+	local temp_new=`mktemp`
+	
+	git show "HEAD:$git_file" | unmin_css > temp_original
+	unmin_css "$git_file" > temp_new
+	
+	$difftool temp_original temp_new
+	
+	rm temp_original temp_new
+}
+
 gitfinddiff() {
 	local iter=0
 	local found=0
