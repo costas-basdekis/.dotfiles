@@ -813,3 +813,6 @@ tst() {
 	done
 }
 
+remove_color() {
+	perl -pe 's/\e\[(\d+|!|\?\d+;\d+)[a-z]|\e>//g'
+}
